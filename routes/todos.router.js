@@ -47,6 +47,41 @@ router.patch("/todos/:todoId", async (req, res) => {
     }
 
     res.send();
-})
+});
+
+router.delete("/todos/:todoId", async (req, res) => {
+    const currentTodo = await Todo.findById(req.params.todoId);
+
+    if (currentTodo) {
+        const result = await Todo.deleteOne({_id: req.params.todoId});
+        res.json(result);
+    };
+});
+
+router.patch("/todos/:todoId", async (req, res) => {
+    const { order, value, done } = req.body;
+
+    const currentTodo = await Todo.findById(req.params.todoId).exec();
+    if (!currentTodo) {
+        throw new Error("존재하지 않는 todo 데이터입니다.")
+    };
+
+    if (order) {
+        const targetTodo = await Todo.findOne({order}).exec();
+        if (targetTodo) {
+            targetTodo.order = currentTodo.order;
+            await targetTodo.save();
+        }
+        currentTodo.order = order;
+    } else if (value) {
+        currentTodo.value = value;
+    } else if (done !== undefined) {
+        currentTodo.doneAt = done ? new Date() : null;
+    }
+
+    await currentTodo.save();
+
+    res.send({});
+});
 
 module.exports = router;

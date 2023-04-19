@@ -6,10 +6,15 @@ const TodoSchema = new mongoose.Schema({
     order: Number,
 });
 
-TodoSchema.virtual("todoId").get(function () {
+TodoSchema
+    .virtual("todoId")
+    .get(function () {
     return this._id.toHexString();
 });
 
-TodoSchema.set("toJSON", { virtuals: true});
+TodoSchema
+    .set("toJSON", { 
+        virtuals: true
+    });
 
-module.exports = mongoose.model("Tode", TodoSchema)
+module.exports = mongoose.model("Todo", TodoSchema)
